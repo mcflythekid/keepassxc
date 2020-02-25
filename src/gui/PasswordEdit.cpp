@@ -90,14 +90,10 @@ void PasswordEdit::setParentPasswordEdit(PasswordEdit* parent)
     m_passwordGeneratorAction->setVisible(false);
 }
 
-void PasswordEdit::enablePasswordGenerator(bool signalOnly)
+void PasswordEdit::enablePasswordGenerator()
 {
-    disconnect(m_passwordGeneratorAction);
-    m_passwordGeneratorAction->setVisible(true);
-
-    if (signalOnly) {
-        connect(m_passwordGeneratorAction, &QAction::triggered, this, &PasswordEdit::togglePasswordGenerator);
-    } else {
+    if (!m_passwordGeneratorAction->isVisible()) {
+        m_passwordGeneratorAction->setVisible(true);
         connect(m_passwordGeneratorAction, &QAction::triggered, this, &PasswordEdit::popupPasswordGenerator);
     }
 }
@@ -127,7 +123,7 @@ bool PasswordEdit::isPasswordVisible() const
 void PasswordEdit::popupPasswordGenerator()
 {
     QDialog pwDialog;
-    pwDialog.setWindowTitle(tr("Generate master password"));
+    pwDialog.setWindowTitle(tr("Generate Password"));
 
     auto pwGenerator = new PasswordGeneratorWidget(&pwDialog);
     auto layout = new QVBoxLayout();
