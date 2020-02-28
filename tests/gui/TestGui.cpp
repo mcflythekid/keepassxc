@@ -460,17 +460,6 @@ void TestGui::testEditEntry()
     QCOMPARE(attrTextEdit->toPlainText(), attrText);
     editEntryWidget->setCurrentPage(0);
 
-    // Test mismatch passwords
-    auto* passwordEdit = editEntryWidget->findChild<QLineEdit*>("passwordEdit");
-    QString originalPassword = passwordEdit->text();
-    passwordEdit->setText("newpass");
-    QTest::mouseClick(okButton, Qt::LeftButton);
-    auto* messageWiget = editEntryWidget->findChild<MessageWidget*>("messageWidget");
-    QTRY_VERIFY(messageWiget->isVisible());
-    QCOMPARE(m_dbWidget->currentMode(), DatabaseWidget::Mode::EditMode);
-    QCOMPARE(passwordEdit->text(), QString("newpass"));
-    passwordEdit->setText(originalPassword);
-
     // Save the edit (press OK)
     QTest::mouseClick(okButton, Qt::LeftButton);
     QApplication::processEvents();
@@ -495,7 +484,6 @@ void TestGui::testEditEntry()
     titleEdit->setText("multiline\ntitle");
     editEntryWidget->findChild<QComboBox*>("usernameComboBox")->lineEdit()->setText("multiline\nusername");
     editEntryWidget->findChild<QLineEdit*>("passwordEdit")->setText("multiline\npassword");
-    editEntryWidget->findChild<QLineEdit*>("passwordRepeatEdit")->setText("multiline\npassword");
     editEntryWidget->findChild<QLineEdit*>("urlEdit")->setText("multiline\nurl");
     QTest::mouseClick(okButton, Qt::LeftButton);
 
@@ -604,9 +592,7 @@ void TestGui::testAddEntry()
     QTest::keyClicks(usernameComboBox, "Auto");
     QTest::keyPress(usernameComboBox, Qt::Key_Right);
     auto* passwordEdit = editEntryWidget->findChild<QLineEdit*>("passwordEdit");
-    auto* passwordRepeatEdit = editEntryWidget->findChild<QLineEdit*>("passwordRepeatEdit");
     QTest::keyClicks(passwordEdit, "something 2");
-    QTest::keyClicks(passwordRepeatEdit, "something 2");
     QTest::mouseClick(editEntryWidgetButtonBox->button(QDialogButtonBox::Ok), Qt::LeftButton);
 
     QCOMPARE(m_dbWidget->currentMode(), DatabaseWidget::Mode::ViewMode);
@@ -652,8 +638,10 @@ void TestGui::testPasswordEntryEntropy()
     QTest::keyClicks(titleEdit, "test");
 
     // Open the password generator
-    auto* generatorButton = editEntryWidget->findChild<QToolButton*>("togglePasswordGeneratorButton");
-    QTest::mouseClick(generatorButton, Qt::LeftButton);
+    auto* passwordEdit = editEntryWidget->findChild<PasswordEdit*>();
+    QVERIFY(passwordEdit);
+    QTest::mouseClick(passwordEdit, Qt::LeftButton);
+    QTest::keyClick(passwordEdit, Qt::Key_G, Qt::ControlModifier);
 
     // Type in some password
     auto* editNewPassword = editEntryWidget->findChild<QLineEdit*>("editNewPassword");
@@ -724,8 +712,10 @@ void TestGui::testDicewareEntryEntropy()
     QTest::keyClicks(titleEdit, "test");
 
     // Open the password generator
-    auto* generatorButton = editEntryWidget->findChild<QToolButton*>("togglePasswordGeneratorButton");
-    QTest::mouseClick(generatorButton, Qt::LeftButton);
+    auto* passwordEdit = editEntryWidget->findChild<PasswordEdit*>();
+    QVERIFY(passwordEdit);
+    QTest::mouseClick(passwordEdit, Qt::LeftButton);
+    QTest::keyClick(passwordEdit, Qt::Key_G, Qt::ControlModifier);
 
     // Select Diceware
     auto* tabWidget = editEntryWidget->findChild<QTabWidget*>("tabWidget");
@@ -1429,7 +1419,6 @@ int TestGui::addCannedEntries()
     auto* editEntryWidget = m_dbWidget->findChild<EditEntryWidget*>("editEntryWidget");
     auto* titleEdit = editEntryWidget->findChild<QLineEdit*>("titleEdit");
     auto* passwordEdit = editEntryWidget->findChild<QLineEdit*>("passwordEdit");
-    auto* passwordRepeatEdit = editEntryWidget->findChild<QLineEdit*>("passwordRepeatEdit");
 
     // Add entry "test" and confirm added
     QTest::mouseClick(entryNewWidget, Qt::LeftButton);
@@ -1442,7 +1431,6 @@ int TestGui::addCannedEntries()
     QTest::mouseClick(entryNewWidget, Qt::LeftButton);
     QTest::keyClicks(titleEdit, "something 2");
     QTest::keyClicks(passwordEdit, "something 2");
-    QTest::keyClicks(passwordRepeatEdit, "something 2");
     QTest::mouseClick(editEntryWidgetButtonBox->button(QDialogButtonBox::Ok), Qt::LeftButton);
     ++entries_added;
 
