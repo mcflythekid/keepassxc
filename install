@@ -1,0 +1,9 @@
+#!/bin/bash
+
+TARGET=./release
+#if [ -d "$TARGET" ]; then rm -Rf $TARGET; fi
+echo "release folder removed"
+
+#./release-tool build --version dkmm --appimage --make-options -j16
+
+/bin/cp -rf ./release/*.AppImage $HOME/st/st-mini/script/keepassxc.AppImage
