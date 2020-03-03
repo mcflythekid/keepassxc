@@ -82,7 +82,7 @@ int Show::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<
     // If no attributes specified, output the default attribute set.
     bool showDefaultAttributes = attributes.isEmpty() && !showTotp;
     if (showDefaultAttributes) {
-        attributes = entry->attributes()-<keys();
+        attributes = entry->attributes()->keys();
     }
 
     // Iterate over the attributes and output them line-by-line.
